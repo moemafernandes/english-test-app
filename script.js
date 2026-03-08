@@ -1,12 +1,12 @@
 // --- START OF FIREBASE CONFIGURATION ---
-// PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
+// Configuração atualizada para a versão v2 (Segura)
 const firebaseConfig = {
-  apiKey: "AIzaSyDSR4F_neduMfzsz4w-LUjuCuCBGIcX0b4",
+  apiKey: "AIzaSyDVCbnWsiE7oJXcIqFdrNX3fY4qLHJxSUs",
   authDomain: "teste-de-ingles-e4285.firebaseapp.com",
   projectId: "teste-de-ingles-e4285",
-  storageBucket: "teste-de-ingles-e4285.appspot.com",
+  storageBucket: "teste-de-ingles-e4285.firebasestorage.app",
   messagingSenderId: "866272890691",
-  appId: "1:866272890691:web:8f1a54321d72efb8e569f6"
+  appId: "1:866272890691:web:8468bace7ff59bb8e569f6"
 };
 // --- END OF FIREBASE CONFIGURATION ---
 
@@ -55,9 +55,7 @@ const questions = [
     { type: 'text', question: 'Which sentence is correct?', options: ['Mato Grosso do Sul is larger that São Paulo.', 'Mato Grosso do Sul is more large than São Paulo.', 'Mato Grosso do Sul is larger than São Paulo.', 'Mato Grosso do Sul is largest São Paulo.'], correct: 'Mato Grosso do Sul is larger than São Paulo.' },
     { type: 'text', question: 'Choose the correct connector: "Brazil exports beef, ______ it also exports coffee."', options: ['so', 'but', 'and', 'because'], correct: 'and' },
     { type: 'text', question: 'Which sentence uses the passive voice correctly?', options: ['Soybeans are exported to China.', 'China exports are soybeans.', 'Soybeans exporting to China.', 'Soybeans is export China.'], correct: 'Soybeans are exported to China.' },
-    // --- QUESTION 17 CORRECTED AS REQUESTED ---
     { type: 'audio', audioSrc: 'ttsreader_17.mp3', question: 'Listen to the audio and choose the best answer.', options: ['The speaker is discussing environmental issues.', 'The speaker is telling a funy story.', 'The speaker is explaining a recipe.', 'The speaker is describing a sport.'], correct: 'The speaker is discussing environmental issues.' },
-    // --- END OF CORRECTION ---
     // Part 4 – Upper-Intermediate (B2–C1)
     { type: 'text', question: 'Choose the correct word to complete the sentence: "Global demand for food is ______ rapidly."', options: ['increase', 'increases', 'increasing', 'increased'], correct: 'increasing' },
     { type: 'text', question: 'Which is the best summary of this idea? "Mato Grosso do Sul improves logistics to reduce export costs."', options: ['Logistics make food expensive.', 'Better logistics reduce costs.', 'Logistics are not important.', 'Mato Grosso do Sul stops exports.'], correct: 'Better logistics reduce costs.' },
@@ -82,7 +80,6 @@ function startTest(e) {
 }
 
 function displayQuestion() {
-    // Clear previous question
     optionsContainer.innerHTML = '';
     audioPlayerContainer.innerHTML = '';
 
@@ -90,11 +87,9 @@ function displayQuestion() {
         const question = questions[currentQuestionIndex];
         questionText.innerText = `${currentQuestionIndex + 1}. ${question.question}`;
 
-        // Update Progress Bar
         const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
         progressBarFull.style.width = `${progress}%`;
 
-        // Handle audio questions
         if (question.type === 'audio') {
             const audioPlayer = document.createElement('audio');
             audioPlayer.controls = true;
@@ -102,7 +97,6 @@ function displayQuestion() {
             audioPlayerContainer.appendChild(audioPlayer);
         }
 
-        // Display options
         question.options.forEach(optionText => {
             const optionElement = document.createElement('div');
             optionElement.classList.add('option');
@@ -111,13 +105,11 @@ function displayQuestion() {
             optionsContainer.appendChild(optionElement);
         });
     } else {
-        // End of test
         showResults();
     }
 }
 
 function selectAnswer(optionElement, selectedAnswer, correctAnswer) {
-    // Disable all options
     document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled'));
 
     if (selectedAnswer === correctAnswer) {
@@ -125,7 +117,6 @@ function selectAnswer(optionElement, selectedAnswer, correctAnswer) {
         optionElement.classList.add('correct');
     } else {
         optionElement.classList.add('incorrect');
-        // Highlight the correct answer
         document.querySelectorAll('.option').forEach(opt => {
             if (opt.innerText === correctAnswer) {
                 opt.classList.add('correct');
@@ -133,11 +124,10 @@ function selectAnswer(optionElement, selectedAnswer, correctAnswer) {
         });
     }
 
-    // Go to the next question after a short delay
     setTimeout(() => {
         currentQuestionIndex++;
         displayQuestion();
-    }, 1500); // 1.5 second delay
+    }, 1500);
 }
 
 function showResults() {
@@ -147,7 +137,7 @@ function showResults() {
     const result = calculateCEFRLevel(score);
     userNameResult.innerText = `${user.firstName} ${user.lastName}`;
     resultLevel.innerText = result;
-    
+
     saveResultsToFirebase(result);
 }
 
@@ -155,18 +145,18 @@ function calculateCEFRLevel(finalScore) {
     const totalQuestions = questions.length;
     const percentage = (finalScore / totalQuestions) * 100;
 
-    if (percentage <= 21) return 'A1'; // ~0-5 correct
-    if (percentage <= 43) return 'A2'; // ~6-10 correct
-    if (percentage <= 65) return 'B1'; // ~11-15 correct
-    if (percentage <= 82) return 'B2'; // ~16-19 correct
-    if (percentage <= 95) return 'C1'; // ~20-22 correct
-    return 'C2'; // 23 correct
+    if (percentage <= 21) return 'A1';
+    if (percentage <= 43) return 'A2';
+    if (percentage <= 65) return 'B1';
+    if (percentage <= 82) return 'B2';
+    if (percentage <= 95) return 'C1';
+    return 'C2';
 }
 
 function saveResultsToFirebase(result) {
     const now = new Date();
-    const date = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-    const time = now.toTimeString().split(' ')[0]; // Format: HH:MM:SS
+    const date = now.toISOString().split('T')[0];
+    const time = now.toTimeString().split(' ')[0];
 
     db.collection("testResults").add({
         FirstName: user.firstName,
